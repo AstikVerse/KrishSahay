@@ -1,0 +1,9 @@
+market_id,market_name,state,city,latitude,longitude,market_type,operating_hours
+1,Azadpur Mandi,Delhi,Delhi,28.7041,77.1025,Wholesale,06:00-18:00
+2,Vashi APMC,Maharashtra,Mumbai,19.0760,72.8777,Wholesale,06:00-18:00
+3,Yeshwanthpur Market,Karnataka,Bangalore,13.0284,77.5430,Wholesale,06:00-18:00
+4,Ludhiana Grain Market,Punjab,Ludhiana,30.9010,75.8573,Wholesale,06:00-18:00
+5,Aminabad Mandi,Uttar Pradesh,Lucknow,26.8467,80.9462,Retail,06:00-18:00
+6,Begum Bazaar,Telangana,Hyderabad,17.3850,78.4867,Wholesale,06:00-18:00
+7,Koyambedu Market,Tamil Nadu,Chennai,13.0697,80.1951,Wholesale,06:00-18:00
+8,Safal Bazaar,West Bengal,Kolkata,22.5726,88.3639,Retail,06:00-18:00
