@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiSahay - Smart Crop Advisor</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            const [crop, setCrop] = useState('tomato');
+            const [quantity, setQuantity] = useState(50);
+            const [location, setLocation] = useState('delhi');
+            const [result, setResult] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handlePredict = async () => {
+                setLoading(true);
+                setError('');
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ crop, quantity, location })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        setError(data.error);
+                    } else {
+                        setResult(data);
+                    }
+                } catch (err) {
+                    setError('Error: ' + err.message + ' - Make sure Flask is running!');
+                }
+                
+                setLoading(false);
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 p-8">
+                    <div className="max-w-4xl mx-auto">
+                        {/* Header */}
+                        <div className="bg-white rounded-lg shadow-xl p-8 mb-6">
+                            <h1 className="text-4xl font-bold text-green-800 mb-2">
+                                🌾 KrishiSahay
+                            </h1>
+                            <p className="text-gray-600">Smart Crop Price Advisor using Real ML</p>
+                        </div>
+
+                        {/* Input Form */}
+                        <div className="bg-white rounded-lg shadow-xl p-8 mb-6">
+                            <h2 className="text-2xl font-bold mb-4">Enter Details</h2>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block font-semibold mb-2">Select Crop:</label>
+                                    <select 
+                                        value={crop}
+                                        onChange={(e) => setCrop(e.target.value)}
+                                        className="w-full p-3 border-2 rounded-lg"
+                                    >
+                                        <option value="tomato">🍅 Tomato</option>
+                                        <option value="onion">🧅 Onion</option>
+                                        <option value="potato">🥔 Potato</option>
+                                        <option value="wheat">🌾 Wheat</option>
+                                        <option value="rice">🍚 Rice</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block font-semibold mb-2">Quantity (Quintals):</label>
+                                    <input 
+                                        type="number"
+                                        value={quantity}
+                                        onChange={(e) => setQuantity(e.target.value)}
+                                        className="w-full p-3 border-2 rounded-lg"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block font-semibold mb-2">Location:</label>
+                                    <select 
+                                        value={location}
+                                        onChange={(e) => setLocation(e.target.value)}
+                                        className="w-full p-3 border-2 rounded-lg"
+                                    >
+                                        <option value="delhi">Delhi</option>
+                                        <option value="mumbai">Mumbai</option>
+                                        <option value="bangalore">Bangalore</option>
+                                        <option value="punjab">Punjab</option>
+                                        <option value="up">UP</option>
+                                    </select>
+                                </div>
+
+                                {error && (
+                                    <div className="p-4 bg-red-100 border-2 border-red-400 rounded-lg text-red-700">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={handlePredict}
+                                    disabled={loading}
+                                    className="w-full bg-green-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-green-700 disabled:opacity-50"
+                                >
+                                    {loading ? '⏳ Loading...' : '✨ Get Prediction'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Results */}
+                        {result && (
+                            <div className="bg-white rounded-lg shadow-xl p-8">
+                                <h2 className="text-2xl font-bold mb-4">
+                                    {result.recommendation === 'wait' ? '⏳ WAIT - Don\'t Sell!' : '✅ You Can Sell'}
+                                </h2>
+                                
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                    <div className="bg-blue-100 p-4 rounded-lg">
+                                        <div className="text-sm text-gray-600">Current Price</div>
+                                        <div className="text-2xl font-bold">₹{result.current_price}</div>
+                                    </div>
+                                    <div className="bg-green-100 p-4 rounded-lg">
+                                        <div className="text-sm text-gray-600">Peak Price</div>
+                                        <div className="text-2xl font-bold">₹{result.peak_price}</div>
+                                    </div>
+                                    <div className="bg-yellow-100 p-4 rounded-lg">
+                                        <div className="text-sm text-gray-600">Increase</div>
+                                        <div className="text-2xl font-bold">+{result.percent_increase}%</div>
+                                    </div>
+                                    <div className="bg-orange-100 p-4 rounded-lg">
+                                        <div className="text-sm text-gray-600">Extra Profit</div>
+                                        <div className="text-2xl font-bold">₹{result.additional_profit}</div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-100 p-4 rounded-lg mb-4">
+                                    <h3 className="font-bold mb-2">AI Recommendation:</h3>
+                                    <p>
+                                        {result.recommendation === 'wait' 
+                                            ? `Wait for ${result.peak_day} days to earn ₹${result.additional_profit} extra!`
+                                            : 'Current prices are good. You can sell now.'
+                                        }
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                                        {result.confidence}% Confidence
+                                    </span>
+                                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                                        Real ML Model
+                                    </span>
+                                    <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                                        R²: {result.model_metrics?.test_r2}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
