@@ -19,7 +19,7 @@ CORS(app)
 BASE_DIR = Path(__file__).resolve().parent
 from pathlib import Path
 MODELS_DIR =  Path(os.environ.get("MODELS_DIR", "models/trained_models"))
-
+print("FILES IN MODELS DIR:", list(MODELS_DIR.glob("*")))
 # Cache for loaded models
 loaded_models = {}
 
